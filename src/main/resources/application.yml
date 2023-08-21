@@ -5,13 +5,7 @@ server:
 #  ssl:
 #    enabled-protocols: TLSv1.2,TLSv1.3
 
-spring:
-  datasource:
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-    url: jdbc:sqlserver://192.168.8.2:1433;databaseName=Data_WaterMeter
-    username: sa
-    password: Aa123456
-
+# 具体数据库连接配置
   data:
     redis:
       host: 127.0.0.1
