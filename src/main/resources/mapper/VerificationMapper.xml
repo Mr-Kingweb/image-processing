@@ -61,6 +61,8 @@
           AND ABS(ErrorStandard) != 1
           AND [Flow Point] * 1.03 >= [InstantFlow L/h]
           AND [Flow Point] * 0.97 <= [InstantFlow L/h]
+          AND [Flow Point] * 1.05 >= [WaterMeterFlow L/h]
+          AND [Flow Point] * 0.95 <= [WaterMeterFlow L/h]
           AND [WaterMeterFlow L/h] != 0.2558;
         ]]>
     </select>

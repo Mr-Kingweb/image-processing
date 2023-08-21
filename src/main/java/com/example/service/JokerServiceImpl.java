@@ -537,11 +537,20 @@ public class JokerServiceImpl implements JokerService {
         headerRow.createCell(18).setCellValue("flowPoint");
         headerRow.createCell(19).setCellValue("tempPoint");
         List<VerificationData> list;
+        // 记录开始时间
+        long startTime = System.nanoTime();
         list = verificationDao.getAllDataVerification(meterNum);
+        // 记录结束时间
+        long endTime = System.nanoTime();
+        // 计算执行时间（以毫秒为单位）
+        long executionTimeMillis = (endTime - startTime) / 1000000;
+        // 输出执行时间
+        System.out.println("数据库获取数据时间" + executionTimeMillis + " ms");
         // 正态分布筛选出95%数据
         List<VerificationData> filteredList = dataAlgorithm(list);
         // 填充数据
         int rowIndex = 1;
+        startTime = System.nanoTime();
         for (VerificationData verificationData : filteredList) {
             Row row = sheet.createRow(rowIndex++);
             Date time_1 = verificationData.getTime();
@@ -572,6 +581,10 @@ public class JokerServiceImpl implements JokerService {
             row.createCell(19).setCellValue(verificationData.getTempPoint());
 
         }
+        endTime = System.nanoTime();
+        executionTimeMillis = (endTime - startTime) / 1000000;
+        // 输出执行时间
+        System.out.println("数据处理时间" + executionTimeMillis + " ms");
         excelReturn("验证数据.xlsx", workbook, response);
     }
 
