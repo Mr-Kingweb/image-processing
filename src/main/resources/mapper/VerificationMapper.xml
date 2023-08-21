@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.dao.VerificationDao">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="AllData" type="com.example.pojo.VerificationData">
+        <result column="Time" property="time"/>
+        <result column="MeterNum" property="meterNum"/>
+        <result column="WaterMeterFlow L/h" property="waterMeterFlowM3h"/>
+        <result column="StandardFlow L/h" property="standardFlowM3h"/>
+        <result column="InstantFlow L/h" property="instantaneousFlowM3h"/>
+        <result column="Temp_biao" property="tempBiao"/>
+        <result column="Temp_table" property="tempTable"/>
+        <result column="wrong" property="wrong"/>
+        <result column="AMP_Up" property="ampUp"/>
+        <result column="AMP_Down" property="ampDown"/>
+        <result column="diffTof ns" property="diffTofNs"/>
+        <result column="sumTof ns" property="sumTofNs"/>
+        <result column="PWR_Up" property="pwrUp"/>
+        <result column="PWR_Down" property="pwrDown"/>
+        <result column="accrued flow" property="accruedFlow"/>
+        <result column="shuitaiaccrued flow" property="shuiTaiAccruedFlow"/>
+        <result column="Error" property="error"/>
+        <result column="ErrorStandard" property="errorStandard"/>
+        <result column="Flow Point" property="flowPoint"/>
+        <result column="Temp point" property="tempPoint"/>
+    </resultMap>
+
+    <select id="getAllDataVerification" resultType="com.example.pojo.VerificationData">
+    <![CDATA[
+        SELECT time,
+               meterNum,
+               [WaterMeterFlow L/h]  AS waterMeterFlowM3h,
+               [StandardFlow L/h]    AS standardFlowM3h,
+               [InstantFlow L/h]     AS instantaneousFlowM3h,
+               [Temp_biao]           AS tempBiao,
+               [Temp_table]          AS tempTable,
+               wrong,
+               [AMP_Up]              AS ampUp,
+               [AMP_Down]            AS ampDown,
+               [diffTof ns]          AS diffTofNs,
+               [sumTof ns]           AS sumTofNs,
+               [PWR_Up]              AS pwrUp,
+               [PWR_Down]            AS pwrDown,
+               [accrued flow]        AS accruedFlow,
+               [shuitaiaccrued flow] AS shuiTaiAccruedFlow,
+               [Error]               AS error,
+               [ErrorStandard]       AS errorStandard,
+               [Flow Point]          AS flowPoint,
+               [Temp point]          AS tempPoint
+        FROM verification
+        WHERE [diffTof ns] >= - 0.3
+          AND [diffTof ns] <= 500
+          AND wrong = '0X00000000'
+          AND MeterNum like #{meterNum} + '%'
+          AND [PWR_Up] >= 0.5
+          AND [PWR_Up] <= 0.75
+          AND [PWR_Down] >= 0.5
+          AND [PWR_Down] <= 0.75
+          AND ABS([Temp_table] - [Temp point]) <= 3
+          AND ABS([Temp_biao] - [Temp point]) <= 4
+          AND ABS(ErrorStandard) != 1
+          AND [Flow Point] * 1.03 >= [InstantFlow L/h]
+          AND [Flow Point] * 0.97 <= [InstantFlow L/h]
+          AND [WaterMeterFlow L/h] != 0.2558;
+        ]]>
+    </select>
+
+    <select id="getAllErrorData" resultType="com.example.pojo.VerificationData">
+        <![CDATA[
+        SELECT meterNum,
+               [WaterMeterFlow L/h] AS waterMeterFlowM3h,
+               [StandardFlow L/h]   AS standardFlowM3h,
+               [Temp_table]         AS tempTable,
+               [diffTof ns]         AS diffTofNs,
+               [sumTof ns]          AS sumTofNs,
+               [Temp_biao]          AS tempBiao,
+               [ErrorStandard]      AS errorStandard,
+               [Flow Point]         AS flowPoint,
+               [Temp point]         AS tempPoint
+        FROM verification
+        WHERE [diffTof ns] >= - 0.3
+          AND [diffTof ns] <= 500
+          AND wrong = '0X00000000'
+          AND MeterNum like #{meterNum} + '%'
+          AND [PWR_Up] >= 0.5
+          AND [PWR_Up] <= 0.75
+          AND [PWR_Down] >= 0.5
+          AND [PWR_Down] <= 0.75
+          AND ABS([Temp_table] - [Temp point]) <= 3
+          AND ABS([Temp_biao] - [Temp point]) <= 4
+          AND ABS(ErrorStandard) != 1
+          AND [WaterMeterFlow L/h] != 0.2558;
+        ]]>
+    </select>
+
+    <select id="getAllErrorDataOrigin" resultType="com.example.pojo.VerificationData">
+        <![CDATA[
+        SELECT meterNum,
+               [WaterMeterFlow L/h] AS waterMeterFlowM3h,
+               [StandardFlow L/h]   AS standardFlowM3h,
+               [Temp_table]         AS tempTable,
+               [diffTof ns]         AS diffTofNs,
+               [sumTof ns]          AS sumTofNs,
+               [Temp_biao]          AS tempBiao,
+               [ErrorStandard]      AS errorStandard,
+               [Flow Point]         AS flowPoint,
+               [Temp point]         AS tempPoint
+        FROM verification
+        where MeterNum like #{meterNum} + '%'
+        ]]>
+    </select>
+</mapper>

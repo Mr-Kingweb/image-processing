@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.dao.JokerDao">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="AllData" type="com.example.pojo.DataClear">
+        <result column="Time" property="time"/>
+        <result column="MeterNum" property="meterNum"/>
+        <result column="diffTof ns" property="diffTofNs"/>
+        <result column="sumTof ns" property="sumTofNs"/>
+        <result column="MeterFlow L/h" property="meterFlowM3h"/>
+        <result column="StandardFlow L/h" property="standardFlow"/>
+        <result column="FlowMode" property="flowMode"/>
+        <result column="Tmp_In" property="tmpIn"/>
+        <result column="Tmp_Out" property="tmpOut"/>
+        <result column="Tmp_table" property="tmpTable"/>
+        <result column="TOF_Up" property="tofUp"/>
+        <result column="TOF_Down" property="tofDown"/>
+        <result column="PWR_Up" property="pwrUp"/>
+        <result column="PWR_Down" property="pwrDown"/>
+        <result column="AMP_Up" property="ampUp"/>
+        <result column="AMP_Down" property="ampDown"/>
+        <result column="Flow point" property="flowPoint"/>
+        <result column="Temp point" property="tempPoint"/>
+    </resultMap>
+<!--创建一个sql server数据表,一个自增主键的类型应该是怎么样的，数据大约有几百万条数据-->
+    <sql id="createTable">
+        CREATE TABLE ${timeNow}
+        (
+            time              VARCHAR(255),
+            meter_num         VARCHAR(255),
+            sp                VARCHAR(255),
+            avg_diff_tof_ns   VARCHAR(255),
+            avg_sum_tof_ns    VARCHAR(255),
+            avg_standard_flow VARCHAR(255),
+            avg_temp          VARCHAR(255),
+            temp_point        INT,
+            strip_data        INT,
+            PRIMARY KEY (time, meter_num)
+        );
+
+    </sql>
+    <select id="getAllDataBp" resultType="com.example.pojo.DataClear">
+        SELECT *
+        FROM (
+                 SELECT ROW_NUMBER() OVER (ORDER BY time) AS RowNum, time, meterNum, [diffTof ns] AS diffTofNs, [sumTof ns] AS sumTofNs, [MeterFlow L/h] AS meterFlowM3h, [StandardFlow L/h] AS standardFlow,
+        flowMode, [Tmp_In] AS tmpIn, [Tmp_Out] AS tmpOut, [Tmp_table] AS tmpTable, [TOF_Up] AS tofUp, [TOF_Down] AS tofDown, [PWR_Up] AS pwrUp,
+        [PWR_Down] AS pwrDown, [AMP_Up] AS ampUp, [AMP_Down] AS ampDown, [Flow point] AS flowPoint, [Temp point] AS tempPoint
+                 FROM DataTable_WaterMeter
+             ) AS Result
+        WHERE RowNum > #{offset}
+          AND RowNum &lt;= #{offset} + #{pageSize}
+
+    </select>
+    <select id="getAllData" resultType="com.example.pojo.DataClear">
+        --         select top 100 time,meterNum,[diffTof ns],[sumTof ns],[MeterFlow m3h],[Standard Flow],flowMode,[Tmp_In],[Tmp_Out],
+--                [Tmp_table],[TOF_Up],[TOF_Down],[PWR_Up],[PWR_Down],[AMP_Up],[AMP_Down],[Flow point],[Temp point]
+--         from DataTable_WaterMeter where [diffTof ns] >= -0.3 and [diffTof ns] &lt;= 500 and [PWR_Up] >=0.5 and [PWR_Up] &lt;= 0.75
+--          and [PWR_Down] >=0.5 and [PWR_Down] &lt;= 0.75 and ABS([Standard Flow] - [MeterFlow m3h] ) &lt;= 0.005 and [MeterFlow m3h]!=
+--         0.2558 and (ABS([Standard Flow] - 0.001*[Flow point]) &lt;= (0.001*0.05*[Flow point]+0.0001))
+<![CDATA[SELECT time, meterNum, [diffTof ns] AS diffTofNs, [sumTof ns] AS sumTofNs, [MeterFlow L/h] AS meterFlowM3h, [StandardFlow L/h] AS standardFlow,
+            flowMode, [Tmp_In] AS tmpIn, [Tmp_Out] AS tmpOut, [Tmp_table] AS tmpTable, [TOF_Up] AS tofUp, [TOF_Down] AS tofDown, [PWR_Up] AS pwrUp,
+            [PWR_Down] AS pwrDown, [AMP_Up] AS ampUp, [AMP_Down] AS ampDown, [Flow point] AS flowPoint, [Temp point] AS tempPoint
+        FROM
+            DataTable_WaterMeter
+        WHERE
+            [diffTof ns] >= - 0.3
+          AND [diffTof ns] <= 500
+          AND MeterNum like #{meterNum} + '%'
+          AND [PWR_Up] >= 0.5
+          AND [PWR_Up] <= 0.75
+          AND [PWR_Down] >= 0.5
+          AND [PWR_Down] <= 0.75
+          AND [MeterFlow L/h] != 0.2558;
+        ]]>
+    </select>
+
+    <select id="getAllDataOrigin" resultType="com.example.pojo.DataClear">
+        <![CDATA[SELECT time, meterNum, [diffTof ns] AS diffTofNs, [sumTof ns] AS sumTofNs, [MeterFlow L/h] AS meterFlowM3h, [StandardFlow L/h] AS standardFlow,
+                        flowMode, [Tmp_In] AS tmpIn, [Tmp_Out] AS tmpOut, [Tmp_table] AS tmpTable, [TOF_Up] AS tofUp, [TOF_Down] AS tofDown, [PWR_Up] AS pwrUp,
+                        [PWR_Down] AS pwrDown, [AMP_Up] AS ampUp, [AMP_Down] AS ampDown, [Flow point] AS flowPoint, [Temp point] AS tempPoint
+                 FROM
+                     DataTable_WaterMeter
+                 WHERE
+                   MeterNum like #{meterNum} + '%'
+        ]]>
+    </select>
+
+    <select id="ampUp" resultType="Integer">
+        select top 1 AMP_Up
+        from DataTable_WaterMeter
+    </select>
+    <update id="increaseDatabase" parameterType="java.lang.CharacterData">
+        <include refid="createTable"/>
+    </update>
+    <insert id="insertData" parameterType="java.lang.CharacterData">
+        INSERT INTO ${timeNow} (time, meter_num, sp, avg_diff_tof_ns, avg_sum_tof_ns, avg_standard_flow, avg_temp,
+                                temp_point, strip_data)
+        VALUES (#{characterizedData.time}, #{characterizedData.meterNum}, #{characterizedData.sp},
+                #{characterizedData.avgDiffTofNs}, #{characterizedData.avgSumTofNs},
+                #{characterizedData.avgStandardFlow}, #{characterizedData.avgTemp}, #{characterizedData.tempPoint},
+                #{characterizedData.stripData})
+    </insert>
+    <select id="ifHasBaseNum" parameterType="string" resultType="int">
+        SELECT COUNT(*)
+        FROM Data_WaterMeter.INFORMATION_SCHEMA.TABLES
+        WHERE TABLE_NAME = #{TableName}
+    </select>
+
+</mapper>
