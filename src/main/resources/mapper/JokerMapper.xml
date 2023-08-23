@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.example.dao.JokerDao">
     <!-- 通用查询映射结果 -->
+    <cache eviction="LRU" flushInterval="100000" readOnly="true" size="1024"/>
     <resultMap id="AllData" type="com.example.pojo.DataClear">
         <result column="Time" property="time"/>
         <result column="MeterNum" property="meterNum"/>
@@ -22,7 +23,6 @@
         <result column="Flow point" property="flowPoint"/>
         <result column="Temp point" property="tempPoint"/>
     </resultMap>
-<!--创建一个sql server数据表,一个自增主键的类型应该是怎么样的，数据大约有几百万条数据-->
     <sql id="createTable">
         CREATE TABLE ${timeNow}
         (

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.example.dao.VerificationDao">
+    <cache eviction="LRU" flushInterval="100000" readOnly="true" size="1024"/>
     <!-- 通用查询映射结果 -->
     <resultMap id="AllData" type="com.example.pojo.VerificationData">
         <result column="Time" property="time"/>
@@ -59,10 +60,12 @@
           AND ABS([Temp_table] - [Temp point]) <= 3
           AND ABS([Temp_biao] - [Temp point]) <= 4
           AND ABS(ErrorStandard) != 1
-          AND [Flow Point] * 1.03 >= [InstantFlow L/h]
-          AND [Flow Point] * 0.97 <= [InstantFlow L/h]
-          AND [Flow Point] * 1.05 >= [WaterMeterFlow L/h]
-          AND [Flow Point] * 0.95 <= [WaterMeterFlow L/h]
+          AND ( [Flow Point] = 0 OR (
+                [Flow Point] * 1.03 >= [InstantFlow L/h]
+                AND [Flow Point] * 0.97 <= [InstantFlow L/h]
+                AND [Flow Point] * 1.28 >= [WaterMeterFlow L/h]
+                AND [Flow Point] * 0.72 <= [WaterMeterFlow L/h]
+            ))
           AND [WaterMeterFlow L/h] != 0.2558;
         ]]>
     </select>

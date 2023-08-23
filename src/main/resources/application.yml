@@ -1,4 +1,3 @@
-
 server:
 #  port: 8081
   port: 8088
@@ -15,6 +14,9 @@ server:
 mybatis:
   type-aliases-package: com.example.pojo
   mapper-locations: classpath:/mapper/*.xml
+  # 开启mybatis的二级缓存
+  configuration:
+    cache-enabled: true
 #spring:
 #  datasource:
 #    driver-class-name: com.mysql.cj.jdbc.Driver
@@ -22,7 +24,12 @@ mybatis:
 #    username: root
 #    password: root
 
+
+# 开启sql打印
 logging:
   level:
     root: INFO
+    com:
+      batis:
+        mapper: debug
     org.springframework.web: DEBUG

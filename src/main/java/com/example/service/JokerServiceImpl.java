@@ -233,7 +233,7 @@ public class JokerServiceImpl implements JokerService {
         }
         return spreadList;
     }
-
+    // test
     @Override
     public List<Integer> ampUp() {
         return jokerDao.ampUp();
