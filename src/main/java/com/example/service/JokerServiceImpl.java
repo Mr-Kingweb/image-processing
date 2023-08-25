@@ -6,8 +6,6 @@ import com.example.dao.VerificationDao;
 import com.example.pojo.CharacterizedData;
 import com.example.pojo.DataClear;
 import com.example.pojo.VerificationData;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.poi.ss.usermodel.*;
@@ -617,6 +615,12 @@ public class JokerServiceImpl implements JokerService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 上传excel 4
+     *
+     * @param meterNum 计num
+     * @param response 响应
+     */
     @Override
     public void uploadExcel_4(String meterNum, HttpServletResponse response) {
         // 创建工作簿
@@ -806,7 +810,7 @@ public class JokerServiceImpl implements JokerService {
     @Override
     public List<DataClear> getByMeterNum(String meterNum) {
         // 防止数据为空,空搜索展现全部数据
-        if (meterNum == null || meterNum.equals("")) {
+        if (meterNum == null || "".equals(meterNum)) {
             return new ArrayList<>();
         }
 //        筛选到符合数据
