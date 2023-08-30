@@ -585,33 +585,72 @@ public class JokerServiceImpl implements JokerService {
         System.out.println("数据处理时间" + executionTimeMillis + " ms");
         excelReturn("验证数据.xlsx", workbook, response);
     }
-
+//    正态分布根据流量点
+//    private List<VerificationData> dataAlgorithm(List<VerificationData> list) {
+//        Map<Integer, List<VerificationData>> groupedMap = list.stream()
+//                .collect(Collectors.groupingBy(VerificationData::getFlowPoint));
+//
+//        Map<Integer, List<VerificationData>> filteredMap = groupedMap.entrySet().stream()
+//                .map(entry -> {
+//                    Integer flowPoint = entry.getKey();
+//                    List<VerificationData> dataList = entry.getValue();
+//
+//                    dataList.sort(Comparator.comparingDouble(VerificationData::getDiffTofNs));
+//                    // 若原始数据<=100 则不进行 正太分布
+////                    if(dataList.size()<=100){
+////                        return Map.entry(flowPoint,dataList);
+////                    }
+//                    int lowerIndex = (int) Math.round(dataList.size() * 0.05);
+//                    int upperIndex = (int) Math.round(dataList.size() * 0.95);
+//
+//                    List<VerificationData> filteredList = dataList.subList(lowerIndex, upperIndex);
+//
+//                    return Map.entry(flowPoint, filteredList);
+//                })
+//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldList, newList) -> {
+//                    List<VerificationData> mergedList = new ArrayList<>(oldList);
+//                    mergedList.addAll(newList);
+//                    return mergedList;
+//                }, LinkedHashMap::new));
+//
+//        return filteredMap.values().stream()
+//                .flatMap(List::stream)
+//                .collect(Collectors.toList());
+//    }
+// 正太分布根据 流量点和 表号
     private List<VerificationData> dataAlgorithm(List<VerificationData> list) {
-        Map<Integer, List<VerificationData>> groupedMap = list.stream()
-                .collect(Collectors.groupingBy(VerificationData::getFlowPoint));
+        Map<String, Map<Integer, List<VerificationData>>> groupedMap = list.stream()
+                .collect(Collectors.groupingBy(VerificationData::getMeterNum, Collectors.groupingBy(VerificationData::getFlowPoint)));
 
-        Map<Integer, List<VerificationData>> filteredMap = groupedMap.entrySet().stream()
+        Map<String, Map<Integer, List<VerificationData>>> filteredMap = groupedMap.entrySet().stream()
                 .map(entry -> {
-                    Integer flowPoint = entry.getKey();
-                    List<VerificationData> dataList = entry.getValue();
+                    String meterNum = entry.getKey();
+                    Map<Integer, List<VerificationData>> flowPointMap = entry.getValue();
 
-                    dataList.sort(Comparator.comparingDouble(VerificationData::getDiffTofNs));
+                    Map<Integer, List<VerificationData>> filteredFlowPointMap = flowPointMap.entrySet().stream()
+                            .map(flowPointEntry -> {
+                                Integer flowPoint = flowPointEntry.getKey();
+                                List<VerificationData> dataList = flowPointEntry.getValue();
 
-                    int lowerIndex = (int) Math.round(dataList.size() * 0.025);
-                    int upperIndex = (int) Math.round(dataList.size() * 0.975);
+                                dataList.sort(Comparator.comparingDouble(VerificationData::getDiffTofNs));
+                                int lowerIndex = (int) Math.round(dataList.size() * 0.05);
+                                int upperIndex = (int) Math.round(dataList.size() * 0.95);
 
-                    List<VerificationData> filteredList = dataList.subList(lowerIndex, upperIndex);
+                                List<VerificationData> filteredList = dataList.subList(lowerIndex, upperIndex);
 
-                    return Map.entry(flowPoint, filteredList);
+                                return Map.entry(flowPoint, filteredList);
+                            })
+                            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+                    return Map.entry(meterNum, filteredFlowPointMap);
                 })
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldList, newList) -> {
-                    List<VerificationData> mergedList = new ArrayList<>(oldList);
-                    mergedList.addAll(newList);
-                    return mergedList;
-                }, LinkedHashMap::new));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        return filteredMap.values().stream()
-                .flatMap(List::stream)
+        List<Map<Integer, List<VerificationData>>> filteredList = new ArrayList<>(filteredMap.values());
+
+        return filteredList.stream()
+                .flatMap(map -> map.entrySet().stream())
+                .flatMap(entry -> entry.getValue().stream())
                 .collect(Collectors.toList());
     }
 

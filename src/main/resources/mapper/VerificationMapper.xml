@@ -57,8 +57,7 @@
           AND [PWR_Up] <= 0.75
           AND [PWR_Down] >= 0.5
           AND [PWR_Down] <= 0.75
-          AND ABS([Temp_table] - [Temp point]) <= 3
-          AND ABS([Temp_biao] - [Temp point]) <= 4
+          AND ABS([Temp_table] - [Temp point]) <= 4
           AND ABS(ErrorStandard) != 1
           AND ( [Flow Point] = 0 OR (
                 [Flow Point] * 1.1 >= [InstantFlow L/h]
@@ -92,8 +91,7 @@
           AND [PWR_Up] <= 0.75
           AND [PWR_Down] >= 0.5
           AND [PWR_Down] <= 0.75
-          AND ABS([Temp_table] - [Temp point]) <= 3
-          AND ABS([Temp_biao] - [Temp point]) <= 4
+          AND ABS([Temp_table] - [Temp point]) <= 4
           AND ABS(ErrorStandard) != 1
           AND ( [Flow Point] = 0 OR (
                 [Flow Point] * 1.1 >= [InstantFlow L/h]
