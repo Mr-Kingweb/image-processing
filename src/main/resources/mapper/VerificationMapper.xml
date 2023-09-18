@@ -59,12 +59,12 @@
           AND [PWR_Down] <= 0.75
           AND ABS([Temp_table] - [Temp point]) <= 4
           AND ABS(ErrorStandard) != 1
-          AND ( [Flow Point] = 0 OR (
+          AND ([Flow Point] = 0 OR (
                 [Flow Point] * 1.1 >= [InstantFlow L/h]
                 AND [Flow Point] * 0.9 <= [InstantFlow L/h]
                 AND [Flow Point] * 1.3 >= [WaterMeterFlow L/h]
                 AND [Flow Point] * 0.7 <= [WaterMeterFlow L/h]
-                AND ABS([InstantFlow L/h] - [StandardFlow L/h] ) / [StandardFlow L/h] <= 0.03
+                AND ABS([InstantFlow L/h] - [StandardFlow L/h]) / [StandardFlow L/h] <= 0.03
             ))
           AND [WaterMeterFlow L/h] != 0.2558;
         ]]>
@@ -93,15 +93,25 @@
           AND [PWR_Down] <= 0.75
           AND ABS([Temp_table] - [Temp point]) <= 4
           AND ABS(ErrorStandard) != 1
-          AND ( [Flow Point] = 0 OR (
+          AND ([Flow Point] = 0 OR (
                 [Flow Point] * 1.1 >= [InstantFlow L/h]
                 AND [Flow Point] * 0.9 <= [InstantFlow L/h]
                 AND [Flow Point] * 1.3 >= [WaterMeterFlow L/h]
                 AND [Flow Point] * 0.7 <= [WaterMeterFlow L/h]
-                AND ABS([InstantFlow L/h] - [StandardFlow L/h] ) / [StandardFlow L/h] <= 0.03
+                AND ABS([InstantFlow L/h] - [StandardFlow L/h]) / [StandardFlow L/h] <= 0.03
             ))
           AND [WaterMeterFlow L/h] != 0.2558;
         ]]>
+    </select>
+
+    <select id="meterNumList" resultType="String">
+        SELECT DISTINCT SUBSTRING(LTRIM(RTRIM(meterNum)), 1,
+                                  CASE
+                                      WHEN LEN(LTRIM(RTRIM(meterNum))) >= 2 THEN LEN(LTRIM(RTRIM(meterNum))) - 1
+                                      ELSE 0
+                                      END) AS meterNum
+        FROM verification
+        WHERE LEN(LTRIM(RTRIM(meterNum))) >= 2
     </select>
 
     <select id="getAllErrorDataOrigin" resultType="com.example.pojo.VerificationData">

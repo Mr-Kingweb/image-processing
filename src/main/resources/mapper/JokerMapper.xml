@@ -42,9 +42,25 @@
     <select id="getAllDataBp" resultType="com.example.pojo.DataClear">
         SELECT *
         FROM (
-                 SELECT ROW_NUMBER() OVER (ORDER BY time) AS RowNum, time, meterNum, [diffTof ns] AS diffTofNs, [sumTof ns] AS sumTofNs, [MeterFlow L/h] AS meterFlowM3h, [StandardFlow L/h] AS standardFlow,
-        flowMode, [Tmp_In] AS tmpIn, [Tmp_Out] AS tmpOut, [Tmp_table] AS tmpTable, [TOF_Up] AS tofUp, [TOF_Down] AS tofDown, [PWR_Up] AS pwrUp,
-        [PWR_Down] AS pwrDown, [AMP_Up] AS ampUp, [AMP_Down] AS ampDown, [Flow point] AS flowPoint, [Temp point] AS tempPoint
+                 SELECT ROW_NUMBER() OVER (ORDER BY time) AS RowNum,
+                        time,
+                        meterNum,
+                        [diffTof ns]                      AS diffTofNs,
+                        [sumTof ns]                       AS sumTofNs,
+                        [MeterFlow L/h]                   AS meterFlowM3h,
+                        [StandardFlow L/h]                AS standardFlow,
+                        flowMode,
+                        [Tmp_In]                          AS tmpIn,
+                        [Tmp_Out]                         AS tmpOut,
+                        [Tmp_table]                       AS tmpTable,
+                        [TOF_Up]                          AS tofUp,
+                        [TOF_Down]                        AS tofDown,
+                        [PWR_Up]                          AS pwrUp,
+                        [PWR_Down]                        AS pwrDown,
+                        [AMP_Up]                          AS ampUp,
+                        [AMP_Down]                        AS ampDown,
+                        [Flow point]                      AS flowPoint,
+                        [Temp point]                      AS tempPoint
                  FROM DataTable_WaterMeter
              ) AS Result
         WHERE RowNum > #{offset}
@@ -57,13 +73,26 @@
 --         from DataTable_WaterMeter where [diffTof ns] >= -0.3 and [diffTof ns] &lt;= 500 and [PWR_Up] >=0.5 and [PWR_Up] &lt;= 0.75
 --          and [PWR_Down] >=0.5 and [PWR_Down] &lt;= 0.75 and ABS([Standard Flow] - [MeterFlow m3h] ) &lt;= 0.005 and [MeterFlow m3h]!=
 --         0.2558 and (ABS([Standard Flow] - 0.001*[Flow point]) &lt;= (0.001*0.05*[Flow point]+0.0001))
-<![CDATA[SELECT time, meterNum, [diffTof ns] AS diffTofNs, [sumTof ns] AS sumTofNs, [MeterFlow L/h] AS meterFlowM3h, [StandardFlow L/h] AS standardFlow,
-            flowMode, [Tmp_In] AS tmpIn, [Tmp_Out] AS tmpOut, [Tmp_table] AS tmpTable, [TOF_Up] AS tofUp, [TOF_Down] AS tofDown, [PWR_Up] AS pwrUp,
-            [PWR_Down] AS pwrDown, [AMP_Up] AS ampUp, [AMP_Down] AS ampDown, [Flow point] AS flowPoint, [Temp point] AS tempPoint
-        FROM
-            DataTable_WaterMeter
-        WHERE
-            [diffTof ns] >= - 0.3
+<![CDATA[SELECT time,
+               meterNum,
+               [diffTof ns]       AS diffTofNs,
+               [sumTof ns]        AS sumTofNs,
+               [MeterFlow L/h]    AS meterFlowM3h,
+               [StandardFlow L/h] AS standardFlow,
+               flowMode,
+               [Tmp_In]           AS tmpIn,
+               [Tmp_Out]          AS tmpOut,
+               [Tmp_table]        AS tmpTable,
+               [TOF_Up]           AS tofUp,
+               [TOF_Down]         AS tofDown,
+               [PWR_Up]           AS pwrUp,
+               [PWR_Down]         AS pwrDown,
+               [AMP_Up]           AS ampUp,
+               [AMP_Down]         AS ampDown,
+               [Flow point]       AS flowPoint,
+               [Temp point]       AS tempPoint
+        FROM DataTable_WaterMeter
+        WHERE [diffTof ns] >= - 0.3
           AND [diffTof ns] <= 500
           AND MeterNum like #{meterNum} + '%'
           AND [PWR_Up] >= 0.5
@@ -75,16 +104,40 @@
     </select>
 
     <select id="getAllDataOrigin" resultType="com.example.pojo.DataClear">
-        <![CDATA[SELECT time, meterNum, [diffTof ns] AS diffTofNs, [sumTof ns] AS sumTofNs, [MeterFlow L/h] AS meterFlowM3h, [StandardFlow L/h] AS standardFlow,
-                        flowMode, [Tmp_In] AS tmpIn, [Tmp_Out] AS tmpOut, [Tmp_table] AS tmpTable, [TOF_Up] AS tofUp, [TOF_Down] AS tofDown, [PWR_Up] AS pwrUp,
-                        [PWR_Down] AS pwrDown, [AMP_Up] AS ampUp, [AMP_Down] AS ampDown, [Flow point] AS flowPoint, [Temp point] AS tempPoint
-                 FROM
-                     DataTable_WaterMeter
-                 WHERE
-                   MeterNum like #{meterNum} + '%'
+        <![CDATA[
+        SELECT time,
+               meterNum,
+               [diffTof ns]       AS diffTofNs,
+               [sumTof ns]        AS sumTofNs,
+               [MeterFlow L/h]    AS meterFlowM3h,
+               [StandardFlow L/h] AS standardFlow,
+               flowMode,
+               [Tmp_In]           AS tmpIn,
+               [Tmp_Out]          AS tmpOut,
+               [Tmp_table]        AS tmpTable,
+               [TOF_Up]           AS tofUp,
+               [TOF_Down]         AS tofDown,
+               [PWR_Up]           AS pwrUp,
+               [PWR_Down]         AS pwrDown,
+               [AMP_Up]           AS ampUp,
+               [AMP_Down]         AS ampDown,
+               [Flow point]       AS flowPoint,
+               [Temp point]       AS tempPoint
+        FROM DataTable_WaterMeter
+        WHERE MeterNum like #{meterNum} + '%'
         ]]>
     </select>
 
+    <select id="meterNumList" resultType="string">
+        SELECT DISTINCT SUBSTRING(LTRIM(RTRIM(meterNum)), 1,
+                                  CASE
+                                      WHEN LEN(LTRIM(RTRIM(meterNum))) >= 2 THEN LEN(LTRIM(RTRIM(meterNum))) - 2
+                                      ELSE 0
+                                      END) AS meterNum
+        FROM DataTable_WaterMeter
+        WHERE LEN(LTRIM(RTRIM(meterNum))) >= 2;
+
+    </select>
     <select id="ampUp" resultType="Integer">
         select top 1 AMP_Up
         from DataTable_WaterMeter

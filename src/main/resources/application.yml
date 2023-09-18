@@ -1,5 +1,5 @@
 server:
-#    port: 8085
+#  port: 8085
   port: 8088
 #  ssl:
 #    enabled-protocols: TLSv1.2,TLSv1.3
@@ -17,14 +17,6 @@ mybatis:
   # 开启mybatis的二级缓存
   configuration:
     cache-enabled: true
-#spring:
-#  datasource:
-#    driver-class-name: com.mysql.cj.jdbc.Driver
-#    url: jdbc:mysql://localhost:3306/test?&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-#    username: root
-#    password: root
-
-
 # 开启sql打印
 logging:
   level:
@@ -33,3 +25,5 @@ logging:
       batis:
         mapper: debug
     org.springframework.web: DEBUG
+# 开启数据库连接池日志
+

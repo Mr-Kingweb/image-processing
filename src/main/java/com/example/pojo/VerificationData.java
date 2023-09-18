@@ -24,7 +24,7 @@ public class VerificationData implements Serializable {
     private Double tempTable; //平均温度
     private String wrong;
     private Integer ampUp; // 波形接受幅值
-    private Integer ampDown; //
+    private Integer ampDown;
     private Double diffTofNs;//飞行时间差 （负值比较大，>500以上，错误数据）
     private Double sumTofNs;//飞行时间和 顺逆流 ，恒定 ，影响因素 温度
     private Double pwrUp; // 脉冲宽度比

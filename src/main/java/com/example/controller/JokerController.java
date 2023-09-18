@@ -28,12 +28,6 @@ public class JokerController {
     JokerService jokerService;
 
     //  获取全部数据，一次性放入缓存
-//   todo 速度获取过慢，需要优化
-//    @GetMapping("/joker")
-//    public List<DataClear> selectAllData(){
-//        List<DataClear> dataClearList = jokerService.selectAllData();
-//        return dataClearList;
-//    }
 // todo 尝试分页调整数据
     @PostMapping("/jokerBp")
     public List<DataClear> selectAllDataBp(@RequestBody Map<String, Object> params) {
@@ -55,6 +49,20 @@ public class JokerController {
     public List<Integer> selectAmpUpData() {
         List<Integer> integerList = jokerService.ampUp();
         return integerList;
+    }
+
+    // 特征化数据模糊表号展示
+    @GetMapping("/meterNumList")
+    public List<String> meterNumList() {
+        List<String> meterNumList = jokerService.meterNumList();
+        return meterNumList;
+    }
+
+    //验证数据模糊表号展示
+    @GetMapping("/meterNumList1")
+    public List<String> meterNumList1() {
+        List<String> meterNumList = jokerService.meterNumList1();
+        return meterNumList;
     }
 
     //      散点图

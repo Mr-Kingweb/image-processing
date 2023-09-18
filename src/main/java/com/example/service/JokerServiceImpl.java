@@ -1,5 +1,7 @@
 package com.example.service;
 
+
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.example.dao.CharacterizedDao;
 import com.example.dao.JokerDao;
 import com.example.dao.VerificationDao;
@@ -33,7 +35,9 @@ import java.util.stream.Collectors;
  * @author JinShengJie
  * @date 2023-07-04 10:41
  */
+
 @Service
+@DS("datasource1")
 public class JokerServiceImpl implements JokerService {
 
     @Autowired
@@ -235,6 +239,16 @@ public class JokerServiceImpl implements JokerService {
     @Override
     public List<Integer> ampUp() {
         return jokerDao.ampUp();
+    }
+
+    @Override
+    public List<String> meterNumList() {
+        return jokerDao.meterNumList();
+    }
+
+    @Override
+    public List<String> meterNumList1() {
+        return verificationDao.meterNumList();
     }
 
     @Override
@@ -505,6 +519,7 @@ public class JokerServiceImpl implements JokerService {
     }
 
     @Override
+    @DS("datasource2")
     public void uploadExcel_3(String meterNum, HttpServletResponse response) {
         // 创建工作簿
         Workbook workbook = new XSSFWorkbook();
@@ -585,7 +600,13 @@ public class JokerServiceImpl implements JokerService {
         System.out.println("数据处理时间" + executionTimeMillis + " ms");
         excelReturn("验证数据.xlsx", workbook, response);
     }
-//    正态分布根据流量点
+
+    /**
+     * 数据算法
+     *
+     * @param list 列表
+     * @return {@link List}<{@link VerificationData}>
+     *///    正态分布根据流量点
 //    private List<VerificationData> dataAlgorithm(List<VerificationData> list) {
 //        Map<Integer, List<VerificationData>> groupedMap = list.stream()
 //                .collect(Collectors.groupingBy(VerificationData::getFlowPoint));
@@ -661,6 +682,7 @@ public class JokerServiceImpl implements JokerService {
      * @param response 响应
      */
     @Override
+    @DS("datasource2")
     public void uploadExcel_4(String meterNum, HttpServletResponse response) {
         // 创建工作簿
         Workbook workbook = new XSSFWorkbook();
@@ -744,7 +766,7 @@ public class JokerServiceImpl implements JokerService {
                     row.createCell(2).setCellValue(flowPoint_1);
                     // 格式化结果，精确到小数点后三位
                     DecimalFormat decimalFormat = new DecimalFormat("#.###");
-                    OptionalDouble diffAverage = list1.stream()
+                      OptionalDouble diffAverage = list1.stream()
                             .mapToDouble(VerificationData::getDiffTofNs)
                             .average();
                     //平均difTof(精准度)
@@ -766,7 +788,7 @@ public class JokerServiceImpl implements JokerService {
                     OptionalDouble waterMeterFlowM3hAvg = list1.stream()
                             .mapToDouble(VerificationData::getWaterMeterFlowM3h)
                             .average();
-                    String waterMeterFlowM3hAvg_1 = decimalFormat.format(waterMeterFlowM3hAvg.getAsDouble() * 1000);
+                    String waterMeterFlowM3hAvg_1 = decimalFormat.format(waterMeterFlowM3hAvg.getAsDouble());
                     row.createCell(4).setCellValue(Double.parseDouble(waterMeterFlowM3hAvg_1));
                     //流量
                     OptionalDouble standardFlowAvg = list1.stream()
@@ -818,7 +840,6 @@ public class JokerServiceImpl implements JokerService {
                     OptionalDouble tmpTableAverage_1 = list1.stream()
                             .mapToDouble(VerificationData::getTempTable)
                             .average();
-
                     String tmpAverage = decimalFormat_1.format(tmpTableAverage_1.getAsDouble());
                     row.createCell(9).setCellValue(Double.parseDouble(tmpAverage));
                     row.createCell(10).setCellValue(sortedMap_2.get(flowPoint_1).size());

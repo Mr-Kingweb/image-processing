@@ -1,5 +1,6 @@
 package com.example.dao;
 
+import com.baomidou.dynamic.datasource.annotation.DS;
 import com.example.pojo.CharacterizedData;
 import com.example.pojo.DataClear;
 import org.apache.ibatis.annotations.Mapper;
@@ -13,8 +14,8 @@ import java.util.List;
  * @author JinShengJie
  * @date 2023-07-04 10:39
  */
-@Mapper
 @Repository
+@Mapper
 public interface JokerDao {
     // 获取全部数据
     List<DataClear> getAllData(@Param("meterNum") String meterNum);
@@ -24,6 +25,8 @@ public interface JokerDao {
     List<DataClear> getAllDataBp(@Param("pageSize")Integer pageSize,@Param("offset")Integer offset);
 
     List<Integer> ampUp();
+
+    List<String> meterNumList();
 
     Integer increaseDatabase(@Param("timeNow") String timeNow);
 
