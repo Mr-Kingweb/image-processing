@@ -1,7 +1,5 @@
 package com.example.service;
 
-
-import com.baomidou.dynamic.datasource.annotation.DS;
 import com.example.dao.CharacterizedDao;
 import com.example.dao.JokerDao;
 import com.example.dao.VerificationDao;
@@ -37,7 +35,6 @@ import java.util.stream.Collectors;
  */
 
 @Service
-@DS("datasource1")
 public class JokerServiceImpl implements JokerService {
 
     @Autowired
@@ -519,7 +516,6 @@ public class JokerServiceImpl implements JokerService {
     }
 
     @Override
-    @DS("datasource2")
     public void uploadExcel_3(String meterNum, HttpServletResponse response) {
         // 创建工作簿
         Workbook workbook = new XSSFWorkbook();
@@ -682,7 +678,6 @@ public class JokerServiceImpl implements JokerService {
      * @param response 响应
      */
     @Override
-    @DS("datasource2")
     public void uploadExcel_4(String meterNum, HttpServletResponse response) {
         // 创建工作簿
         Workbook workbook = new XSSFWorkbook();
