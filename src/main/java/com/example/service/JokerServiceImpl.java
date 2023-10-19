@@ -361,21 +361,6 @@ public class JokerServiceImpl implements JokerService {
         String formattedDate = currentDate.format(DateTimeFormatter.ofPattern("yyMMdd"));
         stringBuilder.append("characterized_data");
         stringBuilder.append(formattedDate);
-        String joker_king = stringBuilder.toString();
-        // todo 目前是首先判断今日表是否创建，无=>创建表，下面插入数据；有=>不做任何操作；
-        int if_success;
-        int if_success_1 = 0;
-        if_success = jokerDao.ifHasBaseNum(joker_king);
-        if (if_success == 1) {
-            System.out.println("已创建过该数据表");
-        } else {
-            if_success_1 = jokerDao.increaseDatabase(joker_king);
-        }
-        if (if_success_1 == 1) {
-
-        } else {
-            System.out.println("创建失败");
-        }
         // tempPoint*meterNum*flowPoint
         Map<Integer, List<DataClear>> tempMap = list.stream().collect(Collectors.groupingBy(DataClear::getTempPoint));
         // todo 考虑把下面的多个增强循环改成普通循环，不需要对数据进行任何处理，获取数据就行,前提条件是一个完整的部分数据不会都被清除掉
@@ -496,19 +481,6 @@ public class JokerServiceImpl implements JokerService {
                     characterizedData.setAvgTemp(tmpAverage);
                     characterizedData.setTempPoint(temp_1);
                     characterizedData.setStripData(sortedMap_2.get(flowPoint_1).size());
-                    // 数据库插入特征化数据
-                    int result;
-                    if (if_success == 1) {
-
-                    } else {
-//                        按照当前时间戳进行排序
-                        result = jokerDao.insertData(joker_king, characterizedData);
-                        if (result == 1) {
-
-                        } else {
-                            System.out.println("数据出错辣");
-                        }
-                    }
                 }
             }
         }
